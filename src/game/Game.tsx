@@ -3,6 +3,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useSettings, keyLabel, ACTIONS } from "./settings";
 import { SettingsPanel } from "./SettingsPanel";
 import { TrainingMenu } from "./TrainingMenu";
+import { LoadingScreen } from "./LoadingScreen";
+import { AccountPanel } from "./AccountPanel";
+import { displayName, initAccount, signOut, useAccount } from "./account";
 import { Environment, Lightformer } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -370,27 +373,56 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+function PlayMenu() {
+  const soon = `${btnAlt} cursor-not-allowed opacity-50`;
+  return (
+    <Section title="Play">
+      <div className="flex max-w-md flex-col gap-3">
+        <button className={btnMain} onClick={playGame}>Offline campaign</button>
+        <p className="-mt-1 text-xs opacity-70">Brown tables + the boss, on your own private server.</p>
+        <button className={soon} disabled>1v1 · coming soon</button>
+        <button className={soon} disabled>Lobby · coming soon</button>
+        <input className="rounded border-2 border-hud/40 bg-hud-track px-3 py-2 font-bold opacity-50" placeholder="Enter lobby code" disabled />
+        <button className={soon} disabled>Party · coming soon</button>
+      </div>
+    </Section>
+  );
+}
+
 function Home() {
   useTick(150);
-  const [tab, setTab] = useState<"main" | "controls" | "tutorial" | "settings">("main");
+  const account = useAccount();
+  const [tab, setTab] = useState<"main" | "play" | "controls" | "tutorial" | "settings">("main");
   if (G.phase !== "home") return null;
   return (
     <div className="fixed inset-0 z-20 flex bg-hud-scrim/40 font-mono text-hud">
-      <div className="flex w-full max-w-md flex-col justify-center bg-hud-panel/70 p-10 backdrop-blur-[2px]">
+      <div className="flex w-full max-w-md flex-col justify-center overflow-y-auto bg-hud-panel/70 p-10 backdrop-blur-[2px]">
         <h1 className="text-6xl font-black leading-none tracking-tight">Table<br />Wars</h1>
         <p className="mt-3 text-sm opacity-70">Break every table. Survive the red boss.</p>
-        <div className="mt-10 flex flex-col gap-3">
-          <button className={btnMain} onClick={playGame}>Play</button>
-          <button className={tab === "controls" ? btnMain : btnAlt} onClick={() => setTab(tab === "controls" ? "main" : "controls")}>Controls &amp; Bot Types</button>
-          <button className={tab === "tutorial" ? btnMain : btnAlt} onClick={() => setTab(tab === "tutorial" ? "main" : "tutorial")} data-glow="orange">Tutorial</button>
-          <button className={btnAlt} onClick={startTraining}>Training</button>
-          <button className={tab === "settings" ? btnMain : btnAlt} onClick={() => setTab(tab === "settings" ? "main" : "settings")}>Settings</button>
-        </div>
+        {account.kind === "none" ? (
+          <div className="mt-8"><AccountPanel /></div>
+        ) : (
+          <>
+            <div className="mt-6 flex items-center justify-between gap-2 text-xs uppercase tracking-widest">
+              <span>Playing as <b className="text-crosshair">{displayName()}</b></span>
+              <button className="underline-offset-4 hover:underline" onClick={() => void signOut()}>{account.kind === "guest" ? "Log in" : "Log out"}</button>
+            </div>
+            <div className="mt-6 flex flex-col gap-3">
+              <button className={btnMain} onClick={() => setTab(tab === "play" ? "main" : "play")}>Play</button>
+              <button className={tab === "controls" ? btnMain : btnAlt} onClick={() => setTab(tab === "controls" ? "main" : "controls")}>Controls &amp; Bot Types</button>
+              <button className={tab === "tutorial" ? btnMain : btnAlt} onClick={() => setTab(tab === "tutorial" ? "main" : "tutorial")} data-glow="orange">Tutorial</button>
+              <button className={btnAlt} onClick={startTraining}>Training</button>
+              <button className={tab === "settings" ? btnMain : btnAlt} onClick={() => setTab(tab === "settings" ? "main" : "settings")}>Settings</button>
+            </div>
+          </>
+        )}
         <p className="mt-10 text-xs opacity-60">Live battle in the arena.</p>
       </div>
-      {tab !== "main" && (
+      {tab !== "main" && account.kind !== "none" && (
         <div className="m-6 flex-1 overflow-y-auto rounded-lg border-2 border-hud/30 bg-hud-panel p-8">
-          {tab === "settings" ? (
+          {tab === "play" ? (
+            <PlayMenu />
+          ) : tab === "settings" ? (
             <SettingsPanel />
           ) : tab === "controls" ? (
             <>
@@ -548,6 +580,10 @@ function WinScreen() {
 
 export function Game() {
   const [, force] = useState(0);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    initAccount();
+  }, []);
   useEffect(() => {
     // Feed the cursor position to whichever GUI button it is over, for the hover glow.
     const move = (e: PointerEvent) => {
@@ -561,9 +597,6 @@ export function Game() {
     return () => window.removeEventListener("pointermove", move);
   }, []);
   useEffect(() => {
-    let done = false;
-    try { done = localStorage.getItem("tw-tutorial-done") === "1"; } catch { /* ignore */ }
-    void done;
     G.phase = "home";
     force((n) => n + 1);
   }, []);
@@ -579,6 +612,7 @@ export function Game() {
       <TrainingMenu />
       <Home />
       <WinScreen />
+      {loading && <LoadingScreen onDone={() => setLoading(false)} />}
     </div>
   );
 }
