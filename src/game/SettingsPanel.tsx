@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ACTIONS, applySettings, keyLabel, useSettings, type Action, type Settings, type TimeOfDay } from "./settings";
+import { ACTIONS, DEFAULT_SETTINGS, applySettings, keyLabel, useSettings, type Action, type Settings, type TimeOfDay } from "./settings";
 
 const TODS: { id: TimeOfDay; label: string; sub: string }[] = [
   { id: "day", label: "Day", sub: "Bright, cool daylight" },
@@ -140,6 +140,7 @@ export function SettingsPanel() {
           Save &amp; Apply
         </button>
         <button disabled={!dirty} onClick={() => setDraft(structuredClone(applied))} className="rounded border-2 border-hud/40 px-6 py-3 font-black uppercase disabled:opacity-40">Discard</button>
+        <button onClick={() => { setSaved(false); setDraft(structuredClone(DEFAULT_SETTINGS)); }} className="rounded border-2 border-destructive px-6 py-3 font-black uppercase text-destructive">Reset settings</button>
         <span className="text-xs font-bold uppercase tracking-widest">
           {dirty ? <span className="text-destructive">Unsaved changes — not applied</span> : saved ? <span className="text-crosshair">Saved &amp; applied</span> : null}
         </span>

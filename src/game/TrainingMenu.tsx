@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { G, TRAIN, TRAIN_CMD, TRAIN_Q, lockPointer, type TrainCfg, type TrainSpawn } from "./state";
+import { G, TRAIN, TRAIN_CMD, TRAIN_DEFAULTS, TRAIN_Q, lockPointer, type TrainCfg, type TrainSpawn } from "./state";
 
 function useTick(ms: number) {
   const [, tick] = useState(0);
@@ -147,6 +147,7 @@ export function TrainingMenu() {
         <div className="mt-8 flex flex-wrap gap-3">
           <button className={`${btn} bg-crosshair text-hud-ink`} onClick={() => close(true)}>Close</button>
           <button className={`${btn} border-2 border-hud/40`} onClick={() => close(false)}>Cancel</button>
+          <button className={`${btn} border-2 border-hud/40`} onClick={() => { setDraft({ ...TRAIN_DEFAULTS }); setQueue([]); setBrowns(1); setBlues(1); setDelay(0); }}>Reset to defaults</button>
           <button className={`${btn} border-2 border-destructive text-destructive`} onClick={() => { TRAIN_CMD.despawn = true; setQueue([]); }}>Despawn all entities</button>
         </div>
       </div>

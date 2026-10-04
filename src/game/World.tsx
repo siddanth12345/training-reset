@@ -332,8 +332,18 @@ export function World() {
     G.playerHp = Math.max(0, G.playerHp - d);
     G.hurtFlash = 0.25;
     if (G.playerHp <= 0) {
-      if (G.mode === "tutorial" || G.mode === "training") {
-        // training: refill and keep every bot / boss health exactly as it was
+      if (G.mode === "training") {
+        // training death: back to the usual spawn point, refill, open the (pausing) training menu
+        G.playerHp = cfg.maxHp();
+        pos.current.copy(START);
+        hv.current.set(0, 0, 0);
+        vy.current = 0;
+        grounded.current = true;
+        G.trainMenu = true;
+        document.exitPointerLock?.();
+        return;
+      }
+      if (G.mode === "tutorial") {
         G.playerHp = cfg.maxHp();
         return;
       }
