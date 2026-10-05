@@ -11,6 +11,8 @@ const password = z
   .regex(/[a-z]/, "Password needs a lowercase letter")
   .regex(/[0-9]/, "Password needs a number");
 
+/** Auth needs 6+ chars; game rules allow 3, so a fixed suffix is added to every stored password. */
+export const PW_SUFFIX = "#TableWars";
 const SYNTH = "@players.tablewars.app";
 const synthEmail = (u: string) => `${u.toLowerCase()}${SYNTH}`;
 
@@ -39,7 +41,7 @@ async function findUser(name: string) {
 }
 
 async function signInTokens(email: string, pw: string) {
-  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw });
+  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX });
   if (error || !data.session) return null;
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }
@@ -53,10 +55,9 @@ export const signUpAccount = createServerFn({ method: "POST" })
     if (await findUser(data.username)) return { error: "That username is taken" };
     const email = data.email ? data.email : synthEmail(data.username);
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email, password: data.password, email_confirm: true, user_metadata: { username: data.username },
+      email, password: data.password + PW_SUFFIX, email_confirm: true, user_metadata: { username: data.username },
     });
     if (error || !created.user) {
-      console.error("signup failed", error?.message);
       return { error: /already/i.test(error?.message ?? "") ? "That email is already used" : "Could not create account" };
     }
     const { error: pErr } = await supabaseAdmin.from("profiles").insert({ id: created.user.id, username: data.username });
