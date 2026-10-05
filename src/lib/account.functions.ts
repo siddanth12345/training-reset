@@ -42,7 +42,7 @@ async function findUser(name: string) {
 
 async function signInTokens(email: string, pw: string) {
   const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX }).catch((e) => ({ data: { session: null }, error: e as Error }));
-  if (error || !data.session) { console.error("signin failed", error?.message); return null; }
+  if (error || !data.session) return null;
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }
 
@@ -58,7 +58,6 @@ export const signUpAccount = createServerFn({ method: "POST" })
       email, password: data.password + PW_SUFFIX, email_confirm: true, user_metadata: { username: data.username },
     });
     if (error || !created.user) {
-      console.error("signup failed", error?.message);
       return { error: /already/i.test(error?.message ?? "") ? "That email is already used" : "Could not create account" };
     }
     const { error: pErr } = await supabaseAdmin.from("profiles").insert({ id: created.user.id, username: data.username });
