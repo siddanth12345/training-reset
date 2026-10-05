@@ -26,7 +26,7 @@ function ResetPassword() {
     e.preventDefault();
     const pe = checkPassword(pw);
     if (pe) return setErr(pe);
-    const { error } = await supabase.auth.updateUser({ password: pw });
+    const { error } = await supabase.auth.updateUser({ password: pw + "#TableWars" });
     if (error) setErr("This reset link is invalid or expired.");
     else setDone(true);
   };

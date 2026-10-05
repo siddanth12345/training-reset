@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { G, TRAIN, TRAIN_CMD, TRAIN_DEFAULTS, TRAIN_Q, lockPointer, type TrainCfg, type TrainSpawn } from "./state";
+import { saveTrainingRemote } from "./account";
 
 function useTick(ms: number) {
   const [, tick] = useState(0);
@@ -67,6 +68,7 @@ export function TrainingMenu() {
       G.dashCd = Math.min(G.dashCd, TRAIN.dashCd);
       G.bombCd = Math.min(G.bombCd, TRAIN.bombCd);
       G.slamCd = Math.min(G.slamCd, TRAIN.slamCd);
+      saveTrainingRemote();
     }
     G.trainMenu = false;
     lockPointer();

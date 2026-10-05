@@ -11,12 +11,14 @@ const password = z
   .regex(/[a-z]/, "Password needs a lowercase letter")
   .regex(/[0-9]/, "Password needs a number");
 
-const SYNTH = "@players.tablewars.local";
+/** Auth needs 6+ chars; game rules allow 3, so a fixed suffix is added to every stored password. */
+export const PW_SUFFIX = "#TableWars";
+const SYNTH = "@players.tablewars.app";
 const synthEmail = (u: string) => `${u.toLowerCase()}${SYNTH}`;
 
 function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  return createClient(process.env["SUPABASE_URL"]!, key, {
+  const key = (process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"] ?? process.env["VITE_SUPABASE_PUBLISHABLE_KEY"])!;
+  return createClient((process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"])!, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: {
       fetch: (input, init) => {
@@ -39,7 +41,7 @@ async function findUser(name: string) {
 }
 
 async function signInTokens(email: string, pw: string) {
-  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw });
+  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX }).catch((e) => ({ data: { session: null }, error: e as Error }));
   if (error || !data.session) return null;
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }
@@ -53,7 +55,7 @@ export const signUpAccount = createServerFn({ method: "POST" })
     if (await findUser(data.username)) return { error: "That username is taken" };
     const email = data.email ? data.email : synthEmail(data.username);
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email, password: data.password, email_confirm: true, user_metadata: { username: data.username },
+      email, password: data.password + PW_SUFFIX, email_confirm: true, user_metadata: { username: data.username },
     });
     if (error || !created.user) {
       return { error: /already/i.test(error?.message ?? "") ? "That email is already used" : "Could not create account" };

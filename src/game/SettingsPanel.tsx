@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ACTIONS, DEFAULT_SETTINGS, applySettings, keyLabel, useSettings, type Action, type Settings, type TimeOfDay } from "./settings";
+import { saveSettingsRemote } from "./account";
 
 const TODS: { id: TimeOfDay; label: string; sub: string }[] = [
   { id: "day", label: "Day", sub: "Bright, cool daylight" },
@@ -134,7 +135,7 @@ export function SettingsPanel() {
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <button
           disabled={!dirty}
-          onClick={() => { applySettings(draft); setSaved(true); }}
+          onClick={() => { applySettings(draft); saveSettingsRemote(); setSaved(true); }}
           className="rounded bg-crosshair px-8 py-3 text-lg font-black uppercase text-hud-ink disabled:opacity-40"
         >
           Save &amp; Apply
