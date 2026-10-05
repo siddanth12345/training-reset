@@ -11,7 +11,7 @@ const password = z
   .regex(/[a-z]/, "Password needs a lowercase letter")
   .regex(/[0-9]/, "Password needs a number");
 
-const SYNTH = "@players.tablewars.local";
+const SYNTH = "@players.tablewars.app";
 const synthEmail = (u: string) => `${u.toLowerCase()}${SYNTH}`;
 
 function publicClient() {
@@ -56,6 +56,7 @@ export const signUpAccount = createServerFn({ method: "POST" })
       email, password: data.password, email_confirm: true, user_metadata: { username: data.username },
     });
     if (error || !created.user) {
+      console.error("signup failed", error?.message);
       return { error: /already/i.test(error?.message ?? "") ? "That email is already used" : "Could not create account" };
     }
     const { error: pErr } = await supabaseAdmin.from("profiles").insert({ id: created.user.id, username: data.username });
