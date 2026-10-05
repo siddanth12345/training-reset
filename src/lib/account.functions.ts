@@ -42,7 +42,7 @@ async function findUser(name: string) {
 
 async function signInTokens(email: string, pw: string) {
   const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX });
-  if (error || !data.session) return null;
+  if (error || !data.session) { console.error("signin failed", error?.message); return null; }
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }
 
