@@ -58,6 +58,7 @@ export const signUpAccount = createServerFn({ method: "POST" })
       email, password: data.password + PW_SUFFIX, email_confirm: true, user_metadata: { username: data.username },
     });
     if (error || !created.user) {
+      console.error("signup failed", error?.message);
       return { error: /already/i.test(error?.message ?? "") ? "That email is already used" : "Could not create account" };
     }
     const { error: pErr } = await supabaseAdmin.from("profiles").insert({ id: created.user.id, username: data.username });
