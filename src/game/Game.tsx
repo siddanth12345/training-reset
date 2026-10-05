@@ -404,7 +404,7 @@ function Home() {
         ) : (
           <>
             <div className="mt-6 flex items-center justify-between gap-2 text-xs uppercase tracking-widest">
-              <span>Playing as <b className="text-crosshair">{displayName()}</b></span>
+              <span>Playing as <b className="normal-case text-crosshair">{displayName()}</b></span>
               <button className="underline-offset-4 hover:underline" onClick={() => void signOut()}>{account.kind === "guest" ? "Log in" : "Log out"}</button>
             </div>
             <div className="mt-6 flex flex-col gap-3">
