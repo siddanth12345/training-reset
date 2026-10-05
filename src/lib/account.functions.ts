@@ -17,8 +17,8 @@ const SYNTH = "@players.tablewars.app";
 const synthEmail = (u: string) => `${u.toLowerCase()}${SYNTH}`;
 
 function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  return createClient(process.env["SUPABASE_URL"]!, key, {
+  const key = (process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"] ?? process.env["VITE_SUPABASE_PUBLISHABLE_KEY"])!;
+  return createClient((process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"])!, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: {
       fetch: (input, init) => {
@@ -41,7 +41,7 @@ async function findUser(name: string) {
 }
 
 async function signInTokens(email: string, pw: string) {
-  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX });
+  const { data, error } = await publicClient().auth.signInWithPassword({ email, password: pw + PW_SUFFIX }).catch((e) => ({ data: { session: null }, error: e as Error }));
   if (error || !data.session) { console.error("signin failed", error?.message); return null; }
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }
