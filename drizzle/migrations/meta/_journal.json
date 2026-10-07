@@ -8,6 +8,13 @@
       "when": 1791153073172,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791348902518,
+      "tag": "0001_add_profile_skin",
+      "breakpoints": true
     }
   ]
 }

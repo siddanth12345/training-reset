@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           id: string
           settings: Json | null
+          skin: Json | null
           training: Json | null
           username: string
         }
@@ -26,6 +27,7 @@ export type Database = {
           created_at?: string
           id: string
           settings?: Json | null
+          skin?: Json | null
           training?: Json | null
           username: string
         }
@@ -33,6 +35,7 @@ export type Database = {
           created_at?: string
           id?: string
           settings?: Json | null
+          skin?: Json | null
           training?: Json | null
           username?: string
         }
