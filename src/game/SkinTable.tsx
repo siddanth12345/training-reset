@@ -63,7 +63,7 @@ function Decor({ skin }: { skin: Skin }) {
     case "plates":
       return (
         <>
-          {[[-1.5, -0.8], [1.5, -0.8], [0, 0.9]].map(([x, z]) => (
+          {([[-1.5, -0.8], [1.5, -0.8], [0, 0.9]] as const).map(([x, z]) => (
             <mesh key={`${x}${z}`} position={[x, y + 0.03, z]}><cylinderGeometry args={[0.7, 0.55, 0.08, 24]} /><meshStandardMaterial color={c} roughness={0.2} /></mesh>
           ))}
         </>
