@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useSettings, keyLabel, ACTIONS } from "./settings";
 import { SettingsPanel } from "./SettingsPanel";
+import { SkinsPanel } from "./SkinsPanel";
 import { TrainingMenu } from "./TrainingMenu";
 import { LoadingScreen } from "./LoadingScreen";
 import { AccountPanel } from "./AccountPanel";
@@ -392,12 +393,12 @@ function PlayMenu() {
 function Home() {
   useTick(150);
   const account = useAccount();
-  const [tab, setTab] = useState<"main" | "play" | "controls" | "tutorial" | "settings">("main");
+  const [tab, setTab] = useState<"main" | "play" | "controls" | "tutorial" | "settings" | "skins">("main");
   if (G.phase !== "home") return null;
   return (
     <div className="fixed inset-0 z-20 flex bg-hud-scrim/40 font-mono text-hud">
       <div className="flex w-full max-w-md flex-col justify-center overflow-y-auto bg-hud-panel/70 p-10 backdrop-blur-[2px]">
-        <h1 className="text-6xl font-black leading-none tracking-tight">Table<br />Wars</h1>
+        <h1 className="text-6xl font-black leading-none tracking-tight">TBLE</h1>
         <p className="mt-3 text-sm opacity-70">Break every table. Survive the red boss.</p>
         {account.kind === "none" ? (
           <div className="mt-8"><AccountPanel /></div>
@@ -412,6 +413,7 @@ function Home() {
               <button className={tab === "controls" ? btnMain : btnAlt} onClick={() => setTab(tab === "controls" ? "main" : "controls")}>Controls &amp; Bot Types</button>
               <button className={tab === "tutorial" ? btnMain : btnAlt} onClick={() => setTab(tab === "tutorial" ? "main" : "tutorial")} data-glow="orange">Tutorial</button>
               <button className={btnAlt} onClick={startTraining}>Training</button>
+              <button className={tab === "skins" ? btnMain : btnAlt} onClick={() => setTab(tab === "skins" ? "main" : "skins")}>Skins</button>
               <button className={tab === "settings" ? btnMain : btnAlt} onClick={() => setTab(tab === "settings" ? "main" : "settings")}>Settings</button>
             </div>
           </>
@@ -422,6 +424,8 @@ function Home() {
         <div className="m-6 flex-1 overflow-y-auto rounded-lg border-2 border-hud/30 bg-hud-panel p-8">
           {tab === "play" ? (
             <PlayMenu />
+          ) : tab === "skins" ? (
+            <SkinsPanel />
           ) : tab === "settings" ? (
             <SettingsPanel />
           ) : tab === "controls" ? (

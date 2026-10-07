@@ -7,10 +7,10 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Reset Password — Table Wars" },
-      { name: "description", content: "Choose a new password for your Table Wars account." },
-      { property: "og:title", content: "Reset Password — Table Wars" },
-      { property: "og:description", content: "Choose a new password for your Table Wars account." },
+      { title: "Reset Password — TBLE" },
+      { name: "description", content: "Choose a new password for your TBLE account." },
+      { property: "og:title", content: "Reset Password — TBLE" },
+      { property: "og:description", content: "Choose a new password for your TBLE account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

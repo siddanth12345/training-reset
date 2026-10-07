@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { applySettings, DEFAULT_SETTINGS, SETTINGS, type Settings } from "./settings";
+import { DEFAULT_SKIN, SKIN, loadSkin, setSkin } from "./skins";
 import { TRAIN, TRAIN_DEFAULTS, type TrainCfg } from "./state";
 
 export type Account =
@@ -26,7 +27,7 @@ export function playAsGuest() {
 }
 
 async function loadProfile(id: string) {
-  const { data } = await supabase.from("profiles").select("username, settings, training").eq("id", id).maybeSingle();
+  const { data } = await supabase.from("profiles").select("username, settings, training, skin").eq("id", id).maybeSingle();
   if (!data) return;
   ACCOUNT = { kind: "user", id, username: data.username };
   if (data.settings) {
@@ -35,6 +36,7 @@ async function loadProfile(id: string) {
     applySettings({ ...DEFAULT_SETTINGS, ...s, keys: { ...DEFAULT_SETTINGS.keys, ...(s.keys ?? {}) } });
     applyingRemote = false;
   }
+  if (data.skin) loadSkin(data.skin);
   if (data.training) Object.assign(TRAIN, TRAIN_DEFAULTS, data.training as Partial<TrainCfg>);
   emit();
 }
@@ -61,6 +63,7 @@ export async function signOut() {
   await supabase.auth.signOut();
   ACCOUNT = { kind: "none" };
   Object.assign(TRAIN, TRAIN_DEFAULTS);
+  setSkin(DEFAULT_SKIN);
   emit();
 }
 
@@ -71,6 +74,11 @@ export function saveSettingsRemote() {
 export function saveTrainingRemote() {
   if (ACCOUNT.kind !== "user") return;
   void supabase.from("profiles").update({ training: { ...TRAIN } }).eq("id", ACCOUNT.id);
+}
+
+export function saveSkinRemote() {
+  if (ACCOUNT.kind !== "user") return;
+  void supabase.from("profiles").update({ skin: { ...SKIN } }).eq("id", ACCOUNT.id);
 }
 
 function subscribe(f: () => void) {

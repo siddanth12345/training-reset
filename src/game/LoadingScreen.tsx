@@ -80,7 +80,7 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
         </svg>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-16 flex flex-col items-center gap-4">
-        <h1 className="text-5xl font-black uppercase tracking-tight">Table Wars</h1>
+        <h1 className="text-5xl font-black uppercase tracking-tight">TBLE</h1>
         <p className="text-xs uppercase tracking-widest opacity-70">{done ? "Servers ready" : STEPS[Math.min(3, Math.floor(progress / 25))] + "…"}</p>
         <div className="h-3 w-80 overflow-hidden rounded bg-hud-track">
           <div className="h-full bg-crosshair transition-[width]" style={{ width: `${progress}%` }} />
